@@ -14,6 +14,7 @@
   template:
     src: filebeat.yml.j2
     dest: /etc/filebeat/filebeat.yml
+  become: yes
   notify:
     - restart filebeat
 
@@ -25,6 +26,7 @@
     group: root
     mode: 0400
   when: filebeat_ca_cert != None
+  become: yes
 
 - name: flush handlers to prevent start then restart
   meta: flush_handlers
@@ -34,3 +36,4 @@
     name: filebeat
     state: started
     enabled: true
+  become: yes
