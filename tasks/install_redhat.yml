@@ -2,6 +2,7 @@
 - name: add rpm key for elastic.co
   rpm_key:
     key: "{{ filebeat_gpg_url }}"
+    validate_certs: no
 
 - name: create beats yum repo
   yumrepo:

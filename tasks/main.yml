@@ -1,39 +1,58 @@
 ---
-- include_vars: "{{ item }}"
+# file tasks/main.yml
+
+- include: vars.yml
+  tags:
+    - vars
+
+- name: install filebeat
+  include: "{{item}}"
   with_first_found:
-    - "../vars/{{ ansible_os_family }}.yml"
-    - "../vars/default.yml"
+    - files:
+      - "install_{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}-{{ansible_machine}}.yml"       # centos-6.4-i386.yml ubuntu-16.04-x86_64.yml
+      - "install_{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}.yml"                           # centos-6.4.yml ubuntu-16.04.yml
+      - "install_{{ansible_distribution|lower}}-{{ansible_distribution_major_version|lower}}-{{ansible_machine}}.yml" # centos-6-i386.yml ubuntu-16-x86_64.yml
+      - "install_{{ansible_distribution|lower}}-{{ansible_distribution_major_version|lower}}.yml"                     # centos-6.yml ubuntu-16.yml
+      - "install_{{ansible_os_family|lower}}-{{ansible_distribution_version|lower}}-{{ansible_machine}}.yml"          # redhat-6.4-i386.yml debian-8.5-x86_64.yml
+      - "install_{{ansible_os_family|lower}}-{{ansible_distribution_version|lower}}.yml"                              # redhat-6.4.yml debian-8.5.yml
+      - "install_{{ansible_os_family|lower}}-{{ansible_distribution_major_version|lower}}-{{ansible_machine}}.yml"    # redhat-6-i386.yml debian-8-x86_64.yml
+      - "install_{{ansible_os_family|lower}}-{{ansible_distribution_major_version|lower}}.yml"                        # redhat-6.yml debian-8.yml
+      - "install_{{ansible_distribution|lower}}-{{ansible_machine}}.yml"                                              # centos-i386.yml ubuntu-x86_64.yml
+      - "install_{{ansible_distribution|lower}}.yml"                                                                  # centos.yml ubuntu.yml
+      - "install_{{ansible_os_family|lower}}-{{ansible_machine}}.yml"                                                 # redhat-i386.yml debian-x86_64.yml
+      - "install_{{ansible_os_family|lower}}.yml"                                                                     # redhat.yml debian.yml
+      - "install_{{ansible_system|lower}}-{{ansible_machine}}.yml"                                                    # linux-i386.yml linux-x86_64.yml
+      - "install_{{ansible_system|lower}}.yml"                                                                        # linux.yml
+      - "install.yml"
+  tags:
+    - install
 
-- include: redhat.yml
-  when: ansible_os_family == 'RedHat'
+- include: config.yml
+  tags:
+    - config
 
-- include: debian.yml
-  when: ansible_os_family == 'Debian'
-
-- name: create filebeat.yml
-  template:
-    src: filebeat.yml.j2
-    dest: /etc/filebeat/filebeat.yml
-  become: yes
-  notify:
-    - restart filebeat
-
-- name: copy ca certificate if required
-  copy:
-    content: "{{ filebeat_ca_cert }}"
-    dest: "{{ filebeat_ca_path }}"
-    owner: root
-    group: root
-    mode: 0400
-  when: filebeat_ca_cert != None
-  become: yes
+- name: run filebeat service
+  include: "{{item}}"
+  with_first_found:
+    - files:
+      - "service_{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}-{{ansible_machine}}.yml"       # centos-6.4-i386.yml ubuntu-16.04-x86_64.yml
+      - "service_{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}.yml"                           # centos-6.4.yml ubuntu-16.04.yml
+      - "service_{{ansible_distribution|lower}}-{{ansible_distribution_major_version|lower}}-{{ansible_machine}}.yml" # centos-6-i386.yml ubuntu-16-x86_64.yml
+      - "service_{{ansible_distribution|lower}}-{{ansible_distribution_major_version|lower}}.yml"                     # centos-6.yml ubuntu-16.yml
+      - "service_{{ansible_os_family|lower}}-{{ansible_distribution_version|lower}}-{{ansible_machine}}.yml"          # redhat-6.4-i386.yml debian-8.5-x86_64.yml
+      - "service_{{ansible_os_family|lower}}-{{ansible_distribution_version|lower}}.yml"                              # redhat-6.4.yml debian-8.5.yml
+      - "service_{{ansible_os_family|lower}}-{{ansible_distribution_major_version|lower}}-{{ansible_machine}}.yml"    # redhat-6-i386.yml debian-8-x86_64.yml
+      - "service_{{ansible_os_family|lower}}-{{ansible_distribution_major_version|lower}}.yml"                        # redhat-6.yml debian-8.yml
+      - "service_{{ansible_distribution|lower}}-{{ansible_machine}}.yml"                                              # centos-i386.yml ubuntu-x86_64.yml
+      - "service_{{ansible_distribution|lower}}.yml"                                                                  # centos.yml ubuntu.yml
+      - "service_{{ansible_os_family|lower}}-{{ansible_machine}}.yml"                                                 # redhat-i386.yml debian-x86_64.yml
+      - "service_{{ansible_os_family|lower}}.yml"                                                                     # redhat.yml debian.yml
+      - "service_{{ansible_system|lower}}-{{ansible_machine}}.yml"                                                    # linux-i386.yml linux-x86_64.yml
+      - "service_{{ansible_system|lower}}.yml"                                                                        # linux.yml
+      - "service.yml"
+  tags:
+    - service
 
 - name: flush handlers to prevent start then restart
   meta: flush_handlers
 
-- name: start and enable filebeat
-  service:
-    name: filebeat
-    state: started
-    enabled: true
-  become: yes

@@ -1,0 +1,21 @@
+---
+# file: tasks/config.yml
+
+- name: create filebeat.yml
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+  become: yes
+  notify:
+    - restart filebeat
+
+- name: copy ca certificate if required
+  copy:
+    content: "{{ filebeat_ca_cert }}"
+    dest: "{{ filebeat_ca_path }}"
+    owner: root
+    group: root
+    mode: 0400
+  when: filebeat_ca_cert != None
+  become: yes
+

@@ -1,0 +1,6 @@
+---
+# file: tasks/install.yml
+
+- name: extract filebeat tarball
+  unarchive: src="https://download.elastic.co/beats/filebeat/filebeat-{{filebeat_version}}-{{ansible_machine}}.tar.gz" dest=/usr/local/bin remote_src=yes validate_certs=false
+
