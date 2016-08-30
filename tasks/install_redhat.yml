@@ -18,3 +18,11 @@
     state: "{{ filebeat_package_state }}"
   notify:
     - restart filebeat
+
+- name: install topbeat
+  yum:
+    name: topbeat
+    state: "{{ topbeat_package_state }}"
+  notify:
+    - restart topbeat
+

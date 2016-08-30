@@ -19,3 +19,11 @@
   when: filebeat_ca_cert != None
   become: yes
 
+- name: create topbeat.yml
+  template:
+    src: topbeat.yml.j2
+    dest: /etc/topbeat/topbeat.yml
+  become: yes
+  notify:
+    - restart topbeat
+

@@ -4,3 +4,10 @@
     name: filebeat
     state: restarted
   become: yes
+
+- name: restart topbeat
+  service:
+    name: topbeat
+    state: restarted
+  become: yes
+

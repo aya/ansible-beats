@@ -1,6 +1,15 @@
+---
 - name: start and enable filebeat
   service:
     name: filebeat
     state: started
     enabled: true
   become: yes
+
+- name: start and enable topbeat
+  service:
+    name: topbeat
+    state: started
+    enabled: true
+  become: yes
+
