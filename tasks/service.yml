@@ -1,15 +1,11 @@
 ---
-- name: start and enable filebeat
-  service:
-    name: filebeat
-    state: started
-    enabled: true
-  become: yes
+# file: tasks/service.yml
 
-- name: start and enable topbeat
+- name: start and enable beats services
   service:
-    name: topbeat
+    name: "{{item}}"
     state: started
     enabled: true
   become: yes
+  with_items: "{{beats_package}}"
 

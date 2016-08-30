@@ -1,2 +1,4 @@
 ---
-filebeat_gpg_url: https://packages.elastic.co/GPG-KEY-elasticsearch
+# file: vars/main.yml
+
+beats_repository_gpg_key_url: https://packages.elastic.co/GPG-KEY-elasticsearch

@@ -1,29 +1,21 @@
 ---
 # file: tasks/config.yml
 
-- name: create filebeat.yml
-  template:
-    src: filebeat.yml.j2
-    dest: /etc/filebeat/filebeat.yml
-  become: yes
-  notify:
-    - restart filebeat
-
-- name: copy ca certificate if required
+- name: create ca certificate
   copy:
-    content: "{{ filebeat_ca_cert }}"
-    dest: "{{ filebeat_ca_path }}"
+    content: "{{ beats_ca_cert }}"
+    dest: "{{ beats_ca_path }}"
     owner: root
     group: root
     mode: 0400
-  when: filebeat_ca_cert != None
+  when: beats_ca_cert != None
   become: yes
 
-- name: create topbeat.yml
+- name: create beats configuration
   template:
-    src: topbeat.yml.j2
-    dest: /etc/topbeat/topbeat.yml
+    src: "{{ item }}.yml.j2"
+    dest: "/etc/{{ item }}/{{ item }}.yml"
   become: yes
   notify:
-    - restart topbeat
-
+    - restart {{ item }}
+  with_items: "{{beats_package}}"

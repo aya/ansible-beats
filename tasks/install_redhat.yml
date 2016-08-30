@@ -1,28 +1,25 @@
 ---
-- name: add rpm key for elastic.co
-  rpm_key:
-    key: "{{ filebeat_gpg_url }}"
-    validate_certs: no
+# file: tasks/install_redhat.yml
 
-- name: create beats yum repo
+- name: add beats repository gpg key
+  rpm_key:
+    key: "{{beats_repository_gpg_key_url}}"
+  become: yes
+
+- name: add beats repository
   yumrepo:
     name: beats
-    baseurl: "{{ filebeat_repo_url }}"
+    baseurl: "{{beats_repository_url}}"
     enabled: yes
     gpgcheck: yes
-    gpgkey: "{{ filebeat_gpg_url }}"
+    gpgkey: "{{beats_repository_gpg_key_url}}"
+  become: yes
 
-- name: install filebeat
+- name: install beats package
   yum:
-    name: filebeat
-    state: "{{ filebeat_package_state }}"
+    name: "{{item.name}}"
+    state: "{{item.state}}"
   notify:
-    - restart filebeat
-
-- name: install topbeat
-  yum:
-    name: topbeat
-    state: "{{ topbeat_package_state }}"
-  notify:
-    - restart topbeat
-
+    - restart {{item.name}}
+  become: yes
+  with_items: "{{beats_package_state}}"

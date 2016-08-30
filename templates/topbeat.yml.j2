@@ -1,2 +1,5 @@
 # {{ ansible_managed }}
-{{ topbeat_config|to_yaml }}
+{{ beats_config_topbeat_input|to_nice_yaml }}
+{{ beats_config_topbeat_output|to_nice_yaml }}
+{{ beats_config_topbeat_shipper|to_nice_yaml }}
+{{ beats_config_topbeat_logging|to_nice_yaml }}

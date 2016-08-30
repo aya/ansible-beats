@@ -1,2 +1,5 @@
 # {{ ansible_managed }}
-{{ filebeat_config|to_yaml }}
+{{ beats_config_filebeat_filebeat|to_nice_yaml }}
+{{ beats_config_filebeat_output|to_nice_yaml }}
+{{ beats_config_filebeat_shipper|to_nice_yaml }}
+{{ beats_config_filebeat_logging|to_nice_yaml }}

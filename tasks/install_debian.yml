@@ -1,20 +1,23 @@
 ---
-- name: add elastic gpg key
+# file: tasks/install_debian.yml
+
+- name: add beats repository gpg key
   apt_key:
-    url: "{{ filebeat_gpg_url }}"
+    url: "{{beats_repository_gpg_key_url}}"
   become: yes
 
 - name: add beats repository
   apt_repository:
-    repo: "{{ filebeat_apt_repo }}"
+    repo: "{{beats_repository_url}}"
     state: present
     update_cache: yes
   become: yes
 
-- name: install filebeat
+- name: install beats package
   apt:
-    name: filebeat
-    state: "{{ filebeat_package_state }}"
+    name: "{{item.name}}"
+    state: "{{item.state}}"
   become: yes
   notify:
-    - restart filebeat
+    - restart {{item.name}}
+  with_items: "{{beats_package_state}}"

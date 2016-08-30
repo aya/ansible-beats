@@ -1,64 +1,76 @@
 ---
-# `filebeat_config` is templated directly into filebeat.yml for the config.
-# You are expected to override this variable, as these configurations are
-# only suited for development purposes.
-# See https://github.com/elastic/filebeat/blob/master/etc/filebeat.yml for
-# an exhaustive list of configurations.
-filebeat_config:
-  filebeat:
-    prospectors:
-      - paths:
-          - /var/log/messages
-          - /var/log/*.log
-        input_type: log
-  output:
-    file:
-      path: /tmp/filebeat
-      filename: filebeat
-  logging:
-    to_syslog: true
-    level: error
+# The list of the packages managed by this role
+beats_package:
+  - filebeat
+  - topbeat
 
+# The installation state of the beats packages, passed to the appropriate
+# packaging module (yum/apt) as the 'state'.
+# Set to 'present' to install, 'latest' to upgrade and 'absent' to remove.
+beats_package_state:
+  - { "name": "filebeat", "state": "present" }
+  - { "name": "topbeat", "state": "present" }
 
-topbeat_config:
-  topbeat:
-    input:
-      - procs: [".*"]
-      - stats: 
-        system: true
-        process: true
-        filesystem: true
-        cpu_per_core: false
+#
+beats_repository_url:
 
-  output:
-    file:
-      path: /tmp/topbeat
-      filename: topbeat
-  logging:
-    to_syslog: true
-    level: error
+#
+beats_repository_gpg_key_url: https://packages.elastic.co/GPG-KEY-elasticsearch
 
+# The version of the beats (only for manual installation on fedora core 5).
+beats_filebeat_version: 1.2.3
+beats_topbeat_version: 1.2.3
 
-# The contents of this variable will be placed into the `filebeat_ca_path`
+# The contents of this variable will be placed into the `beats_ca_path`
 # This should either be set to a string containing your CA certificate or
 # use a lookup plugin to retrieve it.
 #  ex:
-#   filebeat_ca_cert: "{{ lookup('file', '/path/to/ca.crt') }}"
-filebeat_ca_cert: null
-topbeat_ca_cert: null
+#   beats_ca_cert: "{{ lookup('file', '/path/to/ca.crt') }}"
+beats_ca_cert: null
 
 # Path to which the above certificate will be uploaded
-filebeat_ca_path: /etc/filebeat/ca.crt
-topbeat_ca_path: /etc/topbeat/ca.crt
+beats_ca_path: /etc/pki/tls/certs/beats.crt
 
-# The installation state of the filebeat package, passed to the appropriate
-# packaging module (yum/apt) as the 'state'.
-# Set to 'latest' to upgrade.
-filebeat_package_state: present
+# `beats_config_filebeat_*` are templated directly into filebeat.yml for the config.
+# See https://github.com/elastic/filebeat/blob/master/etc/filebeat.yml for
+# an exhaustive list of configurations.
+beats_config_filebeat_filebeat:
+  filebeat:
+    prospectors:
+      - paths:
+        - /var/log/*.log
+beats_config_filebeat_output:
+  output:
+    file:
+      path: /tmp/filebeat
+      filename: filebeat.out
+beats_config_filebeat_logging:
+  logging:
+    to_syslog: true
+    level: error
+beats_config_filebeat_shipper:
+  shipper:
 
-filebeat_version: 1.2.3
-
-topbeat_package_state: present
-
-topbeat_version: 1.2.3
+# `beats_config_topbeat_*` are templated directly into topbeat.yml for the config.
+# See https://github.com/elastic/topbeat/blob/master/etc/topbeat.yml for
+# an exhaustive list of configurations.
+beats_config_topbeat_input:
+  input:
+    procs: [".*"]
+    stats: 
+      system: true
+      process: true
+      filesystem: true
+      cpu_per_core: false
+beats_config_topbeat_output:
+  output:
+    file:
+      path: /tmp/topbeat
+      filename: topbeat.out
+beats_config_topbeat_logging:
+  logging:
+    to_syslog: true
+    level: error
+beats_config_topbeat_shipper:
+  shipper:
 
