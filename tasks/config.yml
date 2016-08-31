@@ -1,7 +1,7 @@
 ---
 # file: tasks/config.yml
 
-- name: create ca certificate
+- name: config - create ca certificate
   copy:
     content: "{{ beats_ca_cert }}"
     dest: "{{ beats_ca_path }}"
@@ -11,7 +11,7 @@
   when: beats_ca_cert != None
   become: yes
 
-- name: create beats configuration
+- name: config - create beats configuration
   template:
     src: "{{ item }}.yml.j2"
     dest: "/etc/{{ item }}/{{ item }}.yml"
@@ -19,3 +19,9 @@
   notify:
     - restart {{ item }}
   with_items: "{{beats_package}}"
+
+- name: config - update file /etc/hosts
+  lineinfile: dest="/etc/hosts" state=present create=yes line="{{item}}"
+  become: yes
+  with_items: "{{beats_hosts}}"
+

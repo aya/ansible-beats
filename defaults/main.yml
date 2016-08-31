@@ -21,6 +21,9 @@ beats_repository_gpg_key_url: https://packages.elastic.co/GPG-KEY-elasticsearch
 beats_filebeat_version: 1.2.3
 beats_topbeat_version: 1.2.3
 
+# a list of host entries to add to /etc/hosts on beats servers
+beats_hosts:
+
 # The contents of this variable will be placed into the `beats_ca_path`
 # This should either be set to a string containing your CA certificate or
 # use a lookup plugin to retrieve it.
