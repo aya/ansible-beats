@@ -5,8 +5,7 @@
   tags:
     - vars
 
-- name: install filebeat
-  include: "{{item}}"
+- include: "{{item}}"
   with_first_found:
     - files:
       - "install_{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}-{{ansible_machine}}.yml"       # centos-6.4-i386.yml ubuntu-16.04-x86_64.yml
@@ -31,8 +30,7 @@
   tags:
     - config
 
-- name: run filebeat service
-  include: "{{item}}"
+- include: "{{item}}"
   with_first_found:
     - files:
       - "service_{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}-{{ansible_machine}}.yml"       # centos-6.4-i386.yml ubuntu-16.04-x86_64.yml
@@ -53,6 +51,6 @@
   tags:
     - service
 
-- name: flush handlers to prevent start then restart
+- name: main - flush handlers to prevent start then restart
   meta: flush_handlers
 

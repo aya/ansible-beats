@@ -1,4 +1,12 @@
 ---
+# file: handlers/main.yml
+
+- name: trace open files
+  command: /tmp/deleted-files "{{item}}"
+  when: beats_trace
+  with_items: "{{beats_package}}"
+  become: yes
+
 - name: restart filebeat
   service:
     name: filebeat

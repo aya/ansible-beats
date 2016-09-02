@@ -11,18 +11,30 @@ beats_package_state:
   - { "name": "filebeat", "state": "present" }
   - { "name": "topbeat", "state": "present" }
 
-#
-beats_repository_url:
+# Repository url
+beats_repository_url: "https://packages.elastic.co/"
 
-#
+# GPG key url
 beats_repository_gpg_key_url: https://packages.elastic.co/GPG-KEY-elasticsearch
 
-# The version of the beats (only for manual installation on fedora core 5).
-beats_filebeat_version: 1.2.3
-beats_topbeat_version: 1.2.3
+# The version of the beats. Set it if you need to fetch a specific version of a beat.
+beats_package_version:
+#  - { "name": "filebeat", "version": "5.0.0-alpha5" }
+#  - { "name": "topbeat", "version": "5.0.0-alpha5" }
 
-# a list of host entries to add to /etc/hosts on beats servers
+# Download specific versions of beats packages from this url.
+beats_package_url: "https://download.elastic.co/beats"
+
+# Fedora core 5 install task still needs this
+beats_filebeat_version: 1.2.3
+
+# Launch debugging command on remote hosts before restarting beats
+beats_trace: false
+
+# list of host entries to add to or remove from /etc/hosts on beats servers.
+# Set state to 'present' to add a line, or 'absent' to remove it.
 beats_hosts:
+#   - { "line": "127.0.0.1 localhost elk", "state": "present" }
 
 # The contents of this variable will be placed into the `beats_ca_path`
 # This should either be set to a string containing your CA certificate or

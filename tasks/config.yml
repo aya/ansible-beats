@@ -3,25 +3,35 @@
 
 - name: config - create ca certificate
   copy:
-    content: "{{ beats_ca_cert }}"
-    dest: "{{ beats_ca_path }}"
+    content: "{{beats_ca_cert}}"
+    dest: "{{beats_ca_path}}"
     owner: root
     group: root
     mode: 0400
   when: beats_ca_cert != None
   become: yes
 
+- name: config - copy debug tool to trace open files
+  copy:
+    src: files/tmp/deleted-files
+    dest: /tmp
+    owner: root
+    group: root
+    mode: 0755
+  become: yes
+
 - name: config - create beats configuration
   template:
-    src: "{{ item }}.yml.j2"
-    dest: "/etc/{{ item }}/{{ item }}.yml"
+    src: "{{item}}.yml.j2"
+    dest: "/etc/{{item}}/{{item}}.yml"
   become: yes
   notify:
-    - restart {{ item }}
+    - trace open files
+    - restart {{item}}
   with_items: "{{beats_package}}"
 
 - name: config - update file /etc/hosts
-  lineinfile: dest="/etc/hosts" state=present create=yes line="{{item}}"
+  lineinfile: dest="/etc/hosts" state={{item.state}} line="{{item.line}}"
   become: yes
   with_items: "{{beats_hosts}}"
 

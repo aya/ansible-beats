@@ -1,23 +1,34 @@
 ---
 # file: tasks/install_debian.yml
 
-- name: add beats repository gpg key
+- name: install - add beats repository gpg key
   apt_key:
     url: "{{beats_repository_gpg_key_url}}"
   become: yes
 
-- name: add beats repository
+- name: install - add beats repository
   apt_repository:
     repo: "{{beats_repository_url}}"
     state: present
     update_cache: yes
   become: yes
 
-- name: install beats package
+- name: install - install beats package from repository
   apt:
     name: "{{item.name}}"
     state: "{{item.state}}"
   become: yes
   notify:
+    - trace open files
     - restart {{item.name}}
   with_items: "{{beats_package_state}}"
+
+- name: install - install selected version of beats package
+  apt:
+    deb: "{{beats_package_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.deb"
+  notify:
+    - trace open files
+    - restart {{item.name}}
+  become: yes
+  with_items: "{{beats_package_version}}"
+

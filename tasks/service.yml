@@ -1,7 +1,7 @@
 ---
 # file: tasks/service.yml
 
-- name: start and enable beats services
+- name: service - start and enable beats services
   service:
     name: "{{item}}"
     state: started
