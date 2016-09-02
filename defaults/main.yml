@@ -1,15 +1,15 @@
 ---
 # The list of the packages managed by this role
-beats_package:
+beats:
   - filebeat
   - topbeat
 
 # The installation state of the beats packages, passed to the appropriate
 # packaging module (yum/apt) as the 'state'.
 # Set to 'present' to install, 'latest' to upgrade and 'absent' to remove.
-beats_package_state:
-  - { "name": "filebeat", "state": "present" }
-  - { "name": "topbeat", "state": "present" }
+beats_package:
+  - { "name": "filebeat", "state": "present", "version": "" }
+  - { "name": "topbeat", "state": "present", "version": "" }
 
 # Repository url
 beats_repository_url: "https://packages.elastic.co/"
@@ -17,19 +17,27 @@ beats_repository_url: "https://packages.elastic.co/"
 # GPG key url
 beats_repository_gpg_key_url: https://packages.elastic.co/GPG-KEY-elasticsearch
 
-# The version of the beats. Set it if you need to fetch a specific version of a beat.
-beats_package_version:
-#  - { "name": "filebeat", "version": "5.0.0-alpha5" }
-#  - { "name": "topbeat", "version": "5.0.0-alpha5" }
+# Download specific versions of beats from this url (instead of install from repo).
+# You can set here a specific url to download the beats packages directly from.
+beats_download_url: "https://download.elastic.co/beats"
 
-# Download specific versions of beats packages from this url.
-beats_package_url: "https://download.elastic.co/beats"
+# List of specific beats version you want to download from beats_download_url.
+beats_download:
+#   - { "name": "filebeat", "version": "5.0.0-alpha5" }
+#   - { "name": "topbeat", "version": "5.0.0-alpha5" }
 
 # Fedora core 5 install task still needs this
 beats_filebeat_version: 1.2.3
 
 # Launch debugging command on remote hosts before restarting beats
-beats_trace: false
+beats_trace:
+  - { "name": "filebeat", "trace": false }
+  - { "name": "topbeat", "trace": false }
+
+# Crontab to restart beats every day
+beats_crontab:
+  - { "name": "filebeat", "crontab": false }
+  - { "name": "topbeat", "crontab": false }
 
 # list of host entries to add to or remove from /etc/hosts on beats servers.
 # Set state to 'present' to add a line, or 'absent' to remove it.

@@ -5,7 +5,7 @@
 # on kernel v2.6.18-194.26.1.el5 filebeat-god segfaults, so we need to monitor the filebeat process with another solution
 
 - name: install - download filebeat rpm
-  get_url: url="https://download.elastic.co/beats/filebeat/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm" dest="/tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm" mode=0440 validate_certs=false
+  get_url: url="https://{{beats_download_url}}/filebeat/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm" dest="/tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm" mode=0440 validate_certs=false
 
 - name: install - install filebeat rpm
   raw: "rpm -qi filebeat >/dev/null 2>&1 || rpm -i /tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm"

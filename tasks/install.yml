@@ -2,6 +2,6 @@
 # file: tasks/install.yml
 
 - name: install - extract beats tarball
-  unarchive: src="{{beats_package_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.tar.gz" dest=/usr/local/bin remote_src=yes validate_certs=false
-  with_items: "{{beats_package_version}}"
+  with_items: "{{beats_download}}"
+  unarchive: src="{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.tar.gz" dest=/usr/local/bin remote_src=yes validate_certs=false
 

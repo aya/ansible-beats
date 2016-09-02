@@ -5,7 +5,9 @@
   tags:
     - vars
 
-- include: "{{item}}"
+- include: "{{install_item}}"
+  loop_control:
+    loop_var: install_item
   with_first_found:
     - files:
       - "install_{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}-{{ansible_machine}}.yml"       # centos-6.4-i386.yml ubuntu-16.04-x86_64.yml
@@ -30,7 +32,9 @@
   tags:
     - config
 
-- include: "{{item}}"
+- include: "{{service_item}}"
+  loop_control:
+    loop_var: service_item
   with_first_found:
     - files:
       - "service_{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}-{{ansible_machine}}.yml"       # centos-6.4-i386.yml ubuntu-16.04-x86_64.yml

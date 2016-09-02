@@ -11,16 +11,8 @@
   when: beats_ca_cert != None
   become: yes
 
-- name: config - copy debug tool to trace open files
-  copy:
-    src: files/tmp/deleted-files
-    dest: /tmp
-    owner: root
-    group: root
-    mode: 0755
-  become: yes
-
 - name: config - create beats configuration
+  with_items: "{{beats}}"
   template:
     src: "{{item}}.yml.j2"
     dest: "/etc/{{item}}/{{item}}.yml"
@@ -28,10 +20,9 @@
   notify:
     - trace open files
     - restart {{item}}
-  with_items: "{{beats_package}}"
 
 - name: config - update file /etc/hosts
+  with_items: "{{beats_hosts}}"
   lineinfile: dest="/etc/hosts" state={{item.state}} line="{{item.line}}"
   become: yes
-  with_items: "{{beats_hosts}}"
 

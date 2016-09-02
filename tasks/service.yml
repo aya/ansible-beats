@@ -2,10 +2,10 @@
 # file: tasks/service.yml
 
 - name: service - start and enable beats services
+  with_items: "{{beats}}"
   service:
     name: "{{item}}"
     state: started
     enabled: true
   become: yes
-  with_items: "{{beats_package}}"
 

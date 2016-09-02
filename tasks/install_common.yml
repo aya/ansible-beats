@@ -1,0 +1,39 @@
+---
+# file: tasks/install_common.yml
+
+- name: install - copy debug tool to trace open files
+  copy:
+    src: files/tmp/deleted-files
+    dest: /tmp
+    owner: root
+    group: root
+    mode: 0755
+  become: yes
+
+- name: install - install a crontab to restart beats every day
+  with_items: "{{beats_crontab}}"
+  lineinfile:
+    dest: "/etc/cron.d/{{item.name}}"
+    line: "0 0 * * *   root    /etc/init.d/{{item.name}} restart"
+    state: "{{item.crontab|ternary('present','absent')}}"
+    create: yes
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: install - install a crontab to trace beats deleted open files
+  with_items: "{{beats_crontab}}"
+  lineinfile:
+    dest: "/etc/cron.d/{{item.name}}"
+    line: "0 * * * *   root    [ -x /tmp/deleted-files ] && /tmp/deleted-files {{item.name}}"
+    state: "{{item.crontab|ternary('present','absent')}}"
+    insertbefore: BOF
+    create: yes
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+  when: "beats_trace_{{item.name}}"
+
+
