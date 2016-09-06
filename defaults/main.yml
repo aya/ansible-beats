@@ -8,8 +8,8 @@ beats:
 # packaging module (yum/apt) as the 'state'.
 # Set to 'present' to install, 'latest' to upgrade and 'absent' to remove.
 beats_package:
-  - { "name": "filebeat", "state": "present", "version": "" }
-  - { "name": "topbeat", "state": "present", "version": "" }
+  - { 'name': 'filebeat', 'state': 'present' }
+  - { 'name': 'topbeat', 'state': 'present' }
 
 # Repository url
 beats_repository_url: "https://packages.elastic.co/"
@@ -22,7 +22,7 @@ beats_repository_gpg_key_url: https://packages.elastic.co/GPG-KEY-elasticsearch
 beats_download_url: "https://download.elastic.co/beats"
 
 # List of specific beats version you want to download from beats_download_url.
-beats_download:
+beats_download: []
 #   - { "name": "filebeat", "version": "5.0.0-alpha5" }
 #   - { "name": "topbeat", "version": "5.0.0-alpha5" }
 

@@ -14,7 +14,7 @@
   with_items: "{{beats_crontab}}"
   lineinfile:
     dest: "/etc/cron.d/{{item.name}}"
-    line: "0 0 * * *   root    /etc/init.d/{{item.name}} restart"
+    line: "0 * * * *   root    /etc/init.d/{{item.name}} restart"
     state: "{{item.crontab|ternary('present','absent')}}"
     create: yes
     owner: root

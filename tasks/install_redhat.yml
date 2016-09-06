@@ -20,15 +20,15 @@
 - name: install - install beats package from repository
   with_items: "{{beats_package}}"
   yum:
-    name: "{{item.name}}-{{item.version|default('')}}"
-    state: "{{item.state|default('installed')}}"
+    name: "{{item.name}}"
+    state: "{{item.state}}"
   notify:
     - trace open files
     - restart {{item.name}}
   become: yes
 
 - name: install - install selected version of beats package
-  with_items: "{{beats_download}}"
+  with_items: "{{beats_download|default([])}}"
   yum:
     name: "{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
   notify:

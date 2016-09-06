@@ -1,15 +1,15 @@
 #!/bin/sh
-
+PATH="/bin:/sbin:/usr/bin:/usr/sbin"
 [ -n "$1" ] || exit
 
 PID=$(pidof "$1")
 for pid in $PID; do
   let $pid >/dev/null 2>&1 || continue
-  file="/tmp/deleted-files-$1-$(date +%Y%m%d-%H%M)-${pid}.log"
+  file="/tmp/deleted-files-$1-$(date +%Y%m%d_%H%M)-${pid}.log"
   echo "# ps auwwx |grep -v $0 |grep $1 |grep -v grep" > $file
   ps auwwx |grep -v $0 |grep $1 |grep -v grep >> $file
   echo "# tail /tmp/$1/$1.out 2>/dev/null" >> $file
-  tail /tmp/$1/$1.out 2>/dev/null >> $file
-  echo "# lsof -p $pid |grep deleted" >> $file
-  lsof -p $pid |grep deleted >> $file
+  [ -f "/tmp/$1/$1.out" ] && tail /tmp/$1/$1.out 2>/dev/null >> $file
+  echo "# lsof -p $pid 2>/dev/null |grep deleted" >> $file
+  lsof -p $pid 2>/dev/null |grep deleted ||true >> $file
 done
