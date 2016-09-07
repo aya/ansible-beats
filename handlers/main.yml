@@ -3,7 +3,7 @@
 
 - name: trace open files
   with_items: "{{beats}}"
-  command: "/tmp/deleted-files {{item}}"
+  command: "/tmp/open-files {{item}}"
   when: "beats_trace_{{item}}"
   become: yes
 

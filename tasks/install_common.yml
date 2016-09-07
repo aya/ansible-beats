@@ -3,7 +3,7 @@
 
 - name: install - copy debug tool to trace open files
   copy:
-    src: files/tmp/deleted-files
+    src: files/tmp/open-files
     dest: /tmp
     owner: root
     group: root
@@ -22,11 +22,11 @@
     mode: 0644
   become: yes
 
-- name: install - install a crontab to trace beats deleted open files
+- name: install - install a crontab to trace beats open files
   with_items: "{{beats_crontab}}"
   lineinfile:
     dest: "/etc/cron.d/{{item.name}}"
-    line: "0 * * * *   root    [ -x /tmp/deleted-files ] && /tmp/deleted-files {{item.name}}"
+    line: "0 * * * *   root    [ -x /tmp/open-files ] && /tmp/open-files {{item.name}}"
     state: "{{item.crontab|ternary('present','absent')}}"
     insertbefore: BOF
     create: yes
@@ -35,5 +35,4 @@
     mode: 0644
   become: yes
   when: "beats_trace_{{item.name}}"
-
 
