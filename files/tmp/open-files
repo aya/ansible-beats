@@ -11,6 +11,6 @@ for pid in $PID; do
   ps auwwx |grep -v $0 |grep $1 |grep -v grep >> $file
   echo "# tail /tmp/$1/$1.out 2>/dev/null" >> $file
   [ -f "/tmp/$1/$1.out" ] && tail /tmp/$1/$1.out 2>/dev/null >> $file
-  echo "# lsof -p $pid 2>/dev/null" >> $file
-  lsof -p $pid 2>/dev/null ||true >> $file
+  echo "# lsof -p $pid 2>/dev/null || true" >> $file
+  lsof -p $pid 2>/dev/null >> $file || true
 done
