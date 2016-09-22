@@ -28,11 +28,11 @@ beats_download: []
 
 # Fedora core 5 install task still needs this
 beats_filebeat_version: 1.2.3
+filebeat_package_state: "present"
 
 # Launch debugging command on remote hosts before restarting beats
-beats_trace:
-  - { "name": "filebeat", "trace": false }
-  - { "name": "topbeat", "trace": false }
+beats_trace_filebeat: false
+beats_trace_topbeat: false
 
 # Crontab to restart beats every day
 beats_crontab:
@@ -42,7 +42,7 @@ beats_crontab:
 # list of host entries to add to or remove from /etc/hosts on beats servers.
 # Set state to 'present' to add a line, or 'absent' to remove it.
 beats_hosts:
-#   - { "line": "127.0.0.1 localhost elk", "state": "present" }
+  - { "line": "127.0.0.1 localhost elk sample", "state": "absent" }
 
 # The contents of this variable will be placed into the `beats_ca_path`
 # This should either be set to a string containing your CA certificate or

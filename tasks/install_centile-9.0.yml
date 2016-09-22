@@ -1,5 +1,5 @@
 ---
-# file: tasks/install_fedora-5.yml
+# file: tasks/install_centile-9.yml
 # filebeat need at least a 2.6.18-194.26.1.el5 kernel to start
 # on kernel-2.6.15-1.2054_FC5 filebeat will fail with beat.go:140: CRIT open /proc/sys/kernel/hostname: errno 530
 # on kernel v2.6.18-194.26.1.el5 filebeat-god segfaults, so we need to monitor the filebeat process with another solution
