@@ -10,6 +10,28 @@
     mode: 0755
   become: yes
 
+- name: install - set init.d environment variables
+  with_items: "{{beats_environment}}"
+  lineinfile:
+    dest: "/etc/sysconfig/{{item.name}}"
+    line: "export {{item.line}}"
+    state: "{{item.state}}"
+    create: yes
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: install - set systemd environment variables
+  with_items: "{{beats_environment}}"
+  lineinfile:
+    dest: "/lib/systemd/system/{{item.name}}.service"
+    line: "ExecStartPre=/bin/bash -c \"/bin/systemctl set-environment {{item.line|regex_replace('\"','\\\"')}}\""
+    state: "{{item.state}}"
+    insertbefore: ^ExecStart
+    create: no
+  become: yes
+
 - name: install - install a crontab to restart beats every day
   with_items: "{{beats_crontab}}"
   lineinfile:

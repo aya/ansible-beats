@@ -34,6 +34,10 @@ filebeat_package_state: "present"
 beats_trace_filebeat: false
 beats_trace_topbeat: false
 
+# Environment variable to set, they will be available in your beats configuration files
+beats_environment:
+#  - { "name": "filebeat", "state": "present", "line": "FB_ENV=$(echo \"production\")" }
+
 # Crontab to restart beats every day
 beats_crontab:
   - { "name": "filebeat", "crontab": false }
