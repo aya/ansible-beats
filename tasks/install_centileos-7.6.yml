@@ -1,0 +1,4 @@
+---
+# file: tasks/install_centileos-7.6.yml
+
+- include: install_fedora-5.yml

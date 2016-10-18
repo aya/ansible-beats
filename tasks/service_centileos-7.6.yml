@@ -1,0 +1,5 @@
+---
+# file: tasks/service_centileos-7.6.yml
+
+- include: service_fedora-5.yml
+

@@ -1,33 +1,4 @@
 ---
 # file: tasks/install_centile-9.yml
-# filebeat need at least a 2.6.18-194.26.1.el5 kernel to start
-# on kernel-2.6.15-1.2054_FC5 filebeat will fail with beat.go:140: CRIT open /proc/sys/kernel/hostname: errno 530
-# on kernel v2.6.18-194.26.1.el5 filebeat-god segfaults, so we need to monitor the filebeat process with another solution
 
-- include: install_common.yml
-
-- name: install - download filebeat rpm
-  get_url: url="{{beats_download_url}}/filebeat/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm" dest="/tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm" mode=0440 validate_certs=false
-
-- name: install - install filebeat rpm
-  raw: "rpm -qi filebeat >/dev/null 2>&1 || rpm -i /tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm"
-  become: yes
-  when: filebeat_package_state == "present"
-
-- name: install - upgrade filebeat rpm
-  raw: "rpm -i --force /tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm"
-  become: yes
-  when: filebeat_package_state == "latest"
-
-- name: install - erase filebeat rpm
-  raw: "rpm -qi filebeat >/dev/null && rpm -e filebeat"
-  become: yes
-  when: filebeat_package_state == "absent"
-
-- name: install - update filebeat init script
-  raw: "[ -f /etc/init.d/filebeat ] && sed -i '/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/,/RETVAL=$?/{s/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/rh_status_q \\&\\& success \\&\\& echo \\&\\& return\\n    exec $agent $args \\&/;s/RETVAL=$?/RETVAL=$?\\n    [ \"$RETVAL\" = 0 ] \\&\\& echo $! > ${pidfile} \\&\\& success \\|\\| failure/}; s/$pidopts $wrapper/$pidopts $agent/; /^wrapper/d' /etc/init.d/filebeat"
-  become: yes
-
-- name: install - remove filebeat rpm
-  raw: "rm /tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm"
-
+- include: install_fedora-5.yml
