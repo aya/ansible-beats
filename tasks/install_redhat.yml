@@ -18,7 +18,7 @@
   become: yes
 
 - name: install - install beats package from repository
-  with_items: "{{beats_package}}"
+  with_items: "{{beats_package|default([])}}"
   yum:
     name: "{{item.name}}"
     state: "{{item.state}}"
@@ -27,7 +27,7 @@
     - restart {{item.name}}
   become: yes
 
-- name: install - install selected version of beats package
+- name: install - install beats package from specific url
   with_items: "{{beats_download|default([])}}"
   yum:
     name: "{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"

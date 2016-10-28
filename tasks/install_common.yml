@@ -11,7 +11,7 @@
   become: yes
 
 - name: install - set init.d environment variables
-  with_items: "{{beats_environment}}"
+  with_items: "{{beats_environment|default([])}}"
   lineinfile:
     dest: "/etc/sysconfig/{{item.name}}"
     line: "export {{item.line}}"
@@ -21,9 +21,10 @@
     group: root
     mode: 0644
   become: yes
+  when: ansible_service_mgr != "systemd"
 
 - name: install - set systemd environment variables
-  with_items: "{{beats_environment}}"
+  with_items: "{{beats_environment|default([])}}"
   lineinfile:
     dest: "/lib/systemd/system/{{item.name}}.service"
     line: "ExecStartPre=/bin/bash -c \"/bin/systemctl set-environment {{item.line|regex_replace('\"','\\\"')}}\""
@@ -31,13 +32,14 @@
     insertbefore: ^ExecStart
     create: no
   become: yes
+  when: ansible_service_mgr == "systemd"
 
-- name: install - install a crontab to restart beats every day
-  with_items: "{{beats_crontab}}"
+- name: install - install a crontab to restart beats every hours
+  with_items: "{{beats|default([])}}"
   lineinfile:
-    dest: "/etc/cron.d/{{item.name}}"
-    line: "0 * * * *   root    sleep 1 && /etc/init.d/{{item.name}} restart"
-    state: "{{item.crontab|ternary('present','absent')}}"
+    dest: "/etc/cron.d/{{item}}"
+    line: "0 * * * *   root    sleep 1 && /etc/init.d/{{item}} restart"
+    state: "{{ hostvars[inventory_hostname]['beats_restart_' + item]|ternary('present','absent') }}"
     create: yes
     owner: root
     group: root
@@ -45,16 +47,15 @@
   become: yes
 
 - name: install - install a crontab to trace beats open files
-  with_items: "{{beats_crontab}}"
+  with_items: "{{beats|default([])}}"
   lineinfile:
-    dest: "/etc/cron.d/{{item.name}}"
-    line: "0 * * * *   root    [ -x /tmp/open-files ] && /tmp/open-files {{item.name}}"
-    state: "{{item.crontab|ternary('present','absent')}}"
+    dest: "/etc/cron.d/{{item}}"
+    line: "0 * * * *   root    [ -x /tmp/open-files ] && /tmp/open-files {{item}}"
+    state: "{{ hostvars[inventory_hostname]['beats_trace_' + item]|ternary('present','absent') }}"
     insertbefore: BOF
     create: yes
     owner: root
     group: root
     mode: 0644
   become: yes
-  when: "beats_trace_{{item.name}}"
 
