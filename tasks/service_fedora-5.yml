@@ -6,34 +6,28 @@
 
 - name: service - install monit rpm
   raw: "rpm -qi monit >/dev/null 2>&1 || rpm -i /tmp/monit-{{ansible_architecture}}.rpm"
-  become: yes
 
 - name: service - remove monit rpm
   raw: "rm /tmp/monit-{{ansible_architecture}}.rpm"
 
 - name: service - configure monit for filebeat
   copy: src=../files/etc/monit.d/filebeat dest=/etc/monit.d/filebeat owner=root group=root mode=0644
-  become: yes
 
 - name: service - configure monit alert mail
   raw: "[ -f /etc/centile/cluster/cluster.conf ] && { grep '^set alert' /etc/monit.conf >/dev/null 2>&1 || awk 'BEGIN {FS=\"=\"} $0 ~ /^mail_recipient/ {print \"set alert \"$2}' /etc/centile/cluster/cluster.conf >> /etc/monit.conf; } || true"
-  become: yes
 
 - name: service - update monit init script
   raw: "[ -f /etc/init.d/monit ] && sed -i 's/daemon $prog -c \"$CONFIG\"/daemon $prog -d 1 -c \"$CONFIG\"/' /etc/init.d/monit"
-  become: yes
 
 - name: service - start and enable monit
   service:
     name: monit
     state: started
     enabled: true
-  become: yes
 
 - name: service - disable beats services
   with_items: "{{beats}}"
   service:
     name: "{{item}}"
     enabled: false
-  become: yes
 

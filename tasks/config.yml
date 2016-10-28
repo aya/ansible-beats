@@ -9,14 +9,12 @@
     group: root
     mode: 0400
   when: beats_ca_cert != None
-  become: yes
 
 - name: config - create beats configuration
   with_items: "{{beats}}"
   template:
     src: "{{item}}.yml.j2"
     dest: "/etc/{{item}}/{{item}}.yml"
-  become: yes
   notify:
     - trace open files
     - restart {{item}}
@@ -24,5 +22,4 @@
 - name: config - update file /etc/hosts
   with_items: "{{beats_hosts}}"
   lineinfile: dest="/etc/hosts" state={{item.state}} line="{{item.line}}"
-  become: yes
 

@@ -6,28 +6,29 @@
 
 - include: install_common.yml
 
-- name: install - download filebeat rpm
-  get_url: url="{{beats_download_url}}/filebeat/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm" dest="/tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm" mode=0440 validate_certs=false
+- name: install - download rpm
+  with_items: "{{beats_download|default([])}}"
+  get_url: url="{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm" dest="/tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm" mode=0440 validate_certs=false
 
-- name: install - install filebeat rpm
-  raw: "rpm -qi filebeat >/dev/null 2>&1 || rpm -i /tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm"
-  become: yes
-  when: filebeat_package_state == "present"
+- name: install - install rpm
+  with_items: "{{beats_download|default([])}}"
+  raw: "rpm -qi {{item.name}} >/dev/null 2>&1 || rpm -i /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
+  when: item.state|default('present') == "present"
 
-- name: install - upgrade filebeat rpm
-  raw: "rpm -i --force /tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm"
-  become: yes
-  when: filebeat_package_state == "latest"
+- name: install - upgrade rpm
+  with_items: "{{beats_download|default([])}}"
+  raw: "rpm -i --nosignature --force /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
+  when: item.state|default('present') == "latest"
 
-- name: install - erase filebeat rpm
-  raw: "rpm -qi filebeat >/dev/null && rpm -e filebeat"
-  become: yes
-  when: filebeat_package_state == "absent"
+- name: install - erase rpm
+  with_items: "{{beats_download|default([])}}"
+  raw: "rpm -qi {{item.name}} >/dev/null && rpm -e {{item.name}}"
+  when: item.state|default('present') == "absent"
 
 - name: install - update filebeat init script
   raw: "[ -f /etc/init.d/filebeat ] && sed -i '/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/,/RETVAL=$?/{s/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/rh_status_q \\&\\& success \\&\\& echo \\&\\& return\\n    exec $agent $args \\&/;s/RETVAL=$?/RETVAL=$?\\n    [ \"$RETVAL\" = 0 ] \\&\\& echo $! > ${pidfile} \\&\\& success \\|\\| failure/}; s/$pidopts $wrapper/$pidopts $agent/; /^wrapper/d' /etc/init.d/filebeat"
-  become: yes
 
-- name: install - remove filebeat rpm
-  raw: "rm /tmp/filebeat-{{beats_filebeat_version}}-{{ansible_machine}}.rpm"
+- name: install - remove rpm
+  with_items: "{{beats_download|default([])}}"
+  raw: "rm /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
 

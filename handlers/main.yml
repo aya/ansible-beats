@@ -5,17 +5,14 @@
   with_items: "{{beats}}"
   command: "/tmp/open-files {{item}}"
   when: "beats_trace_{{item}}"
-  become: yes
 
 - name: restart filebeat
   service:
     name: filebeat
     state: restarted
-  become: yes
 
 - name: restart topbeat
   service:
     name: topbeat
     state: restarted
-  become: yes
 

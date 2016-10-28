@@ -23,12 +23,8 @@ beats_download_url: "https://artifacts.elastic.co/downloads/beats"
 
 # List of specific beats version you want to download from beats_download_url.
 # beats_download:
-#   - { "name": "filebeat", "version": "5.0.0" }
-#   - { "name": "topbeat", "version": "5.0.0" }
-
-# Fedora core 5 install task still needs this
-beats_filebeat_version: 1.2.3
-filebeat_package_state: "present"
+#   - { "name": "filebeat", "version": "5.0.0", "state": "latest" }
+#   - { "name": "topbeat", "version": "5.0.0", "state": "latest" }
 
 # Restart beats every hour
 beats_restart_filebeat: false

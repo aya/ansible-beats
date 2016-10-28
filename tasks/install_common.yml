@@ -8,7 +8,6 @@
     owner: root
     group: root
     mode: 0755
-  become: yes
 
 - name: install - set init.d environment variables
   with_items: "{{beats_environment|default([])}}"
@@ -20,7 +19,6 @@
     owner: root
     group: root
     mode: 0644
-  become: yes
   when: ansible_service_mgr != "systemd"
 
 - name: install - set systemd environment variables
@@ -31,7 +29,6 @@
     state: "{{item.state}}"
     insertbefore: ^ExecStart
     create: no
-  become: yes
   when: ansible_service_mgr == "systemd"
 
 - name: install - install a crontab to restart beats every hours
@@ -44,7 +41,6 @@
     owner: root
     group: root
     mode: 0644
-  become: yes
 
 - name: install - install a crontab to trace beats open files
   with_items: "{{beats|default([])}}"
@@ -57,5 +53,4 @@
     owner: root
     group: root
     mode: 0644
-  become: yes
 
