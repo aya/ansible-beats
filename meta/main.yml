@@ -1,9 +1,9 @@
 ---
 galaxy_info:
-  author: David Wittman
-  description: Installs Elastic's Filebeat for forwarding logs.
+  author: David Wittman, Yann Autissier
+  description: Installs Elastic's beats
   license: BSD
-  min_ansible_version: 1.2
+  min_ansible_version: 2.1
   platforms:
   - name: EL
     versions:

@@ -15,7 +15,7 @@ beats_package:
 beats_repository_url: "https://packages.elastic.co/"
 
 # GPG key url
-beats_repository_gpg_key_url: https://packages.elastic.co/GPG-KEY-elasticsearch
+beats_repository_gpg_key_url: "https://packages.elastic.co/GPG-KEY-elasticsearch"
 
 # Download specific versions of beats from this url (instead of install from repo).
 # You can set here a specific url to download the beats packages directly from.
@@ -34,14 +34,17 @@ beats_restart_topbeat: false
 beats_trace_filebeat: false
 beats_trace_topbeat: false
 
+# Location of beats configurations loaded by the init script
+beats_init_config_directory: "/etc/sysconfig"
+
 # Environment variable to set, they will be available in your beats configuration files
 # beats_environment:
-#  - { "name": "filebeat", "state": "present", "line": "FB_ENV=$(echo \"production\")" }
+#  - { "name": "filebeat", "state": "present", "line": "FB_ENV=$(echo \"test\")" }
 
 # list of host entries to add to or remove from /etc/hosts on beats servers.
 # Set state to 'present' to add a line, or 'absent' to remove it.
-beats_hosts:
-  - { "line": "127.0.0.1 localhost elk sample", "state": "absent" }
+# beats_hosts:
+#   - { "line": "127.0.0.1 localhost elk sample", "state": "absent" }
 
 # The contents of this variable will be placed into the `beats_ca_path`
 # This should either be set to a string containing your CA certificate or

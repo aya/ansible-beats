@@ -17,7 +17,7 @@
   become: yes
 
 - name: install - install beats package from repository
-  with_items: "{{beats_package}}"
+  with_items: "{{beats_package|default([])}}"
   apt:
     name: "{{item.name}}=''{{item.version|default('')}}"
     state: "{{item.state|default('present')}}"
@@ -27,7 +27,7 @@
     - restart {{item.name}}
 
 - name: install - install selected version of beats package
-  with_items: "{{beats_download}}"
+  with_items: "{{beats_download|default([])}}"
   apt:
     deb: "{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.deb"
     state: "{{item.state|default('present')}}"

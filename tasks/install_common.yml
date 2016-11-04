@@ -12,7 +12,7 @@
 - name: install - set init.d environment variables
   with_items: "{{beats_environment|default([])}}"
   lineinfile:
-    dest: "/etc/sysconfig/{{item.name}}"
+    dest: "{{beats_init_config_directory}}/{{item.name}}"
     line: "export {{item.line}}"
     state: "{{item.state}}"
     create: yes

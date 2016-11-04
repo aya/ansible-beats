@@ -2,3 +2,4 @@
 # file: vars/debian.yml
 
 beats_repository_url: "deb https://packages.elastic.co/beats/apt stable main"
+beats_init_config_directory: "/etc/defaut"

@@ -4,6 +4,8 @@
 - name: vars - load per operating system variables
   include_vars: "{{item}}"
   with_first_found:
+    - paths:
+      - "vars/"
     - files:
       - "{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}-{{ansible_machine}}.yml"       # centos-6.4-i386.yml ubuntu-16.04-x86_64.yml
       - "{{ansible_distribution|lower}}-{{ansible_distribution_version|lower}}.yml"                           # centos-6.4.yml ubuntu-16.04.yml
@@ -20,8 +22,13 @@
       - "{{ansible_system|lower}}-{{ansible_machine}}.yml"                                                    # linux-i386.yml linux-x86_64.yml
       - "{{ansible_system|lower}}.yml"                                                                        # linux.yml
       - "default.yml"                                                                                         # default.yml
-    - paths:
-      - "vars/"
+      skip: true
 
 - name: vars - override with local variables
-  include_vars: "local.yml"
+  include_vars: "{{item}}"
+  with_first_found:
+    - paths:
+      - "vars/"
+    - files:
+      - "local.yml"
+      skip: true

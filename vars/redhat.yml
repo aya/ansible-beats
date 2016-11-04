@@ -1,4 +1,4 @@
 ---
 # file: vars/redhat.yml
 
-beats_repository_url: https://packages.elastic.co/beats/yum/el/$basearch
+beats_repository_url: "https://packages.elastic.co/beats/yum/el/$basearch"
