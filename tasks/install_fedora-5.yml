@@ -12,7 +12,7 @@
 
 - name: install - install rpm
   with_items: "{{beats_download|default([])}}"
-  raw: "rpm -qi {{item.name}} >/dev/null 2>&1 || rpm -i /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
+  raw: "rpm -qi {{item.name}} >/dev/null 2>&1 || rpm -i --nosignature /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
   when: item.state|default('present') == "present"
 
 - name: install - upgrade rpm
