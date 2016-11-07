@@ -1,0 +1,8 @@
+#!/bin/bash
+
+[ -n "$1" ] && process="$1" || exit
+
+for pid in $(pidof "${process}"); do
+    let ${pid} >/dev/null 2>&1 || continue
+    echo date: $(date +%Y-%m-%dT%H:%M:%S) ${process}_pid: ${pid} ${process}_deleted_open_files: $(lsof -n -p ${pid} |grep deleted |wc -l)
+done

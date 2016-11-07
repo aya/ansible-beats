@@ -2,8 +2,17 @@
 # file: tasks/install_common.yml
 
 - name: install - copy debug tool to trace open files
+  when: hostvars[inventory_hostname]['beats_trace_filebeat'] or hostvars[inventory_hostname]['beats_trace_topbeat']
   copy:
-    src: files/tmp/open-files
+    src: files/tmp/log-open-files
+    dest: /tmp
+    owner: root
+    group: root
+    mode: 0755
+
+- name: install - copy debug tool to count deleted open files
+  copy:
+    src: files/tmp/count-deleted-open-files
     dest: /tmp
     owner: root
     group: root
@@ -11,6 +20,7 @@
 
 - name: install - set init.d environment variables
   with_items: "{{beats_environment|default([])}}"
+  when: ansible_service_mgr != "systemd"
   lineinfile:
     dest: "{{beats_init_config_directory}}/{{item.name}}"
     line: "export {{item.line}}"
@@ -19,17 +29,16 @@
     owner: root
     group: root
     mode: 0644
-  when: ansible_service_mgr != "systemd"
 
 - name: install - set systemd environment variables
   with_items: "{{beats_environment|default([])}}"
+  when: ansible_service_mgr == "systemd"
   lineinfile:
     dest: "/lib/systemd/system/{{item.name}}.service"
     line: "ExecStartPre=/bin/bash -c \"/bin/systemctl set-environment {{item.line|regex_replace('\"','\\\"')}}\""
     state: "{{item.state}}"
     insertbefore: ^ExecStart
     create: no
-  when: ansible_service_mgr == "systemd"
 
 - name: install - install a crontab to restart beats every hours
   with_items: "{{beats|default([])}}"

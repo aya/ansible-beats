@@ -12,18 +12,18 @@
 
 - name: install - install rpm
   with_items: "{{beats_download|default([])}}"
-  raw: "rpm -qi {{item.name}} >/dev/null 2>&1 || rpm -i --nosignature /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
   when: item.state|default('present') == "present"
+  raw: "rpm --nosignature -qi {{item.name}} >/dev/null 2>&1 || rpm -i --nosignature /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
 
 - name: install - upgrade rpm
   with_items: "{{beats_download|default([])}}"
-  raw: "rpm -i --nosignature --force /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
   when: item.state|default('present') == "latest"
+  raw: "rpm -i --nosignature --force /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
 
 - name: install - erase rpm
   with_items: "{{beats_download|default([])}}"
-  raw: "rpm -qi {{item.name}} >/dev/null && rpm -e {{item.name}}"
   when: item.state|default('present') == "absent"
+  raw: "rpm --nosignature -qi {{item.name}} >/dev/null && rpm -e {{item.name}}"
 
 - name: install - update filebeat init script
   raw: "[ -f /etc/init.d/filebeat ] && sed -i '/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/,/RETVAL=$?/{s/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/rh_status_q \\&\\& success \\&\\& echo \\&\\& return\\n    exec $agent $args \\&/;s/RETVAL=$?/RETVAL=$?\\n    [ \"$RETVAL\" = 0 ] \\&\\& echo $! > ${pidfile} \\&\\& success \\|\\| failure/}; s/$pidopts $wrapper/$pidopts $agent/; /^wrapper/d' /etc/init.d/filebeat"

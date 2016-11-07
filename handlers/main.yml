@@ -3,7 +3,7 @@
 
 - name: trace open files
   with_items: "{{beats}}"
-  command: "/tmp/open-files {{item}}"
+  command: "/tmp/log-open-files {{item}}"
   when: "beats_trace_{{item}}"
 
 - name: restart filebeat

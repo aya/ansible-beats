@@ -2,13 +2,13 @@
 # file: tasks/config.yml
 
 - name: config - create ca certificate
+  when: beats_ca_cert != None
   copy:
     content: "{{beats_ca_cert}}"
     dest: "{{beats_ca_path}}"
     owner: root
     group: root
     mode: 0400
-  when: beats_ca_cert != None
 
 - name: config - create beats configuration
   with_items: "{{beats|default([])}}"
