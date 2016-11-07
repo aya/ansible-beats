@@ -20,6 +20,7 @@
 
 - name: install - install beats package from repository
   with_items: "{{beats_package|default([])}}"
+  when: item.name is defined
   yum:
     name: "{{item.name}}"
     state: "{{item.state|default('present')}}"
