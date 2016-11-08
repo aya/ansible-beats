@@ -6,6 +6,11 @@
 
 - include: install_common.yml
 
+- name: install - remove beats package
+  with_items: "{{beats_package|default([])}}"
+  when: item.name is defined and item.state|default('present') == "absent"
+  raw: "rpm --nosignature -qi {{item.name}} >/dev/null && rpm -e {{item.name}}"
+
 - name: install - download rpm
   with_items: "{{beats_download|default([])}}"
   get_url: url="{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm" dest="/tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm" mode=0440 validate_certs=false

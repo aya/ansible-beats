@@ -55,7 +55,7 @@
   with_items: "{{beats|default([])}}"
   lineinfile:
     dest: "/etc/cron.d/{{item}}"
-    line: "0 * * * *   root    [ -x /tmp/open-files ] && /tmp/open-files {{item}}"
+    line: "0 * * * *   root    [ -x /tmp/log-open-files ] && /tmp/log-open-files {{item}}"
     state: "{{ hostvars[inventory_hostname]['beats_trace_' + item]|ternary('present','absent') }}"
     insertbefore: BOF
     create: yes
