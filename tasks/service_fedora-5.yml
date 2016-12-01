@@ -22,12 +22,13 @@
 - name: service - start and enable monit
   service:
     name: monit
-    state: started
-    enabled: true
+    state: "{{beats_start_filebeat |default(true) |ternary('started','stopped')}}"
+    enabled: "{{beats_start_filebeat |default(true)}}"
 
 - name: service - disable beats services
   with_items: "{{beats}}"
   service:
     name: "{{item}}"
+    state: "stopped"
     enabled: false
 

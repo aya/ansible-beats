@@ -26,6 +26,10 @@ beats_download_url: "https://artifacts.elastic.co/downloads/beats"
 #   - { "name": "filebeat", "version": "5.0.0", "state": "latest" }
 #   - { "name": "topbeat", "version": "5.0.0", "state": "latest" }
 
+# Start beats at boot
+beats_start_filebeat: true
+beats_start_topbeat: true
+
 # Restart beats every hour
 beats_restart_filebeat: false
 beats_restart_topbeat: false
