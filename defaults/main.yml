@@ -3,6 +3,8 @@
 beats:
   - filebeat
   - topbeat
+  - packetbeat
+  - metricbeat
 
 # The installation state of the beats packages, passed to the appropriate
 # packaging module (yum/apt) as the 'state'.
@@ -10,6 +12,7 @@ beats:
 beats_package:
   - { 'name': 'filebeat', 'state': 'present' }
   - { 'name': 'topbeat', 'state': 'present' }
+  - { 'name': 'packetbeat', 'state': 'present' }
 
 # Repository url
 beats_repository_url: "https://packages.elastic.co/"
@@ -24,19 +27,26 @@ beats_download_url: "https://artifacts.elastic.co/downloads/beats"
 # List of specific beats version you want to download from beats_download_url.
 # beats_download:
 #   - { "name": "filebeat", "version": "5.0.0", "state": "latest" }
-#   - { "name": "topbeat", "version": "5.0.0", "state": "latest" }
+#   - { "name": "packetbeat", "version": "5.0.0", "state": "latest" }
+#   - { "name": "metricbeat", "version": "5.0.0", "state": "latest" }
 
-# Start beats at boot
+# Start beats
 beats_start_filebeat: true
 beats_start_topbeat: true
+beats_start_packetbeat: true
+beats_start_metricbeat: true
 
 # Restart beats every hour
 beats_restart_filebeat: false
 beats_restart_topbeat: false
+beats_restart_packetbeat: false
+beats_restart_metricbeat: false
 
 # Trace beats open files every hour
 beats_trace_filebeat: false
 beats_trace_topbeat: false
+beats_trace_packetbeat: false
+beats_trace_metricbeat: false
 
 # Location of beats configurations loaded by the init script
 beats_init_config_directory: "/etc/sysconfig"
@@ -60,30 +70,28 @@ beats_ca_cert: null
 # Path to which the above certificate will be uploaded
 beats_ca_path: /etc/pki/tls/certs/beats.crt
 
-# `beats_config_filebeat_*` are templated directly into filebeat.yml for the config.
-# See https://github.com/elastic/filebeat/blob/master/etc/filebeat.yml for
+# `beats_config_filebeat` is templated directly into filebeat.yml for the config.
+# See https://github.com/elastic/beats/blob/master/filebeat/filebeat.yml for
 # an exhaustive list of configurations.
-beats_config_filebeat_filebeat:
+beats_config_filebeat:
   filebeat:
     prospectors:
       - paths:
         - /var/log/*.log
-beats_config_filebeat_output:
+        - /var/log/*/*.log
   output:
     file:
       path: /tmp/filebeat
       filename: filebeat.out
-beats_config_filebeat_logging:
   logging:
     to_syslog: true
     level: error
-beats_config_filebeat_shipper:
   shipper:
 
-# `beats_config_topbeat_*` are templated directly into topbeat.yml for the config.
-# See https://github.com/elastic/topbeat/blob/master/etc/topbeat.yml for
+# `beats_config_topbeat` is templated directly into topbeat.yml for the config.
+# See https://github.com/elastic/beats/blob/1.3/topbeat/etc/topbeat.yml for
 # an exhaustive list of configurations.
-beats_config_topbeat_input:
+beats_config_topbeat:
   input:
     procs: [".*"]
     stats: 
@@ -91,15 +99,79 @@ beats_config_topbeat_input:
       process: true
       filesystem: true
       cpu_per_core: false
-beats_config_topbeat_output:
   output:
     file:
       path: /tmp/topbeat
       filename: topbeat.out
-beats_config_topbeat_logging:
   logging:
     to_syslog: true
     level: error
-beats_config_topbeat_shipper:
   shipper:
+
+# `beats_config_packetbeat` is templated directly into packetbeat.yml for the config.
+# See https://github.com/elastic/beats/blob/master/packetbeat/packetbeat.yml for
+# an exhaustive list of configurations.
+beats_config_packetbeat:
+  interfaces:
+    device: any
+  protocols:
+    dns:
+        include_additionals: true
+        include_authorities: true
+        ports:
+        - 53
+    http:
+        ports:
+        - 80
+        - 8080
+    memcache:
+        ports:
+        - 11211
+    mongodb:
+        ports:
+        - 27017
+    mysql:
+        ports:
+        - 3306
+    pgsql:
+        ports:
+        - 5432
+    redis:
+        ports:
+        - 6379
+    thrift:
+        ports:
+        - 9090
+  output:
+    file:
+      path: /tmp/packetbeat
+      filename: packetbeat.out
+  logging:
+    to_syslog: true
+    level: error
+
+# `beats_config_metricbeat` is templated directly into metricbeat.yml for the config.
+# See https://github.com/elastic/beats/blob/master/metricbeat/metricbeat.yml for
+# an exhaustive list of configurations.
+beats_config_metricbeat:
+  metricbeat.modules:
+    - module: system
+      metricsets:
+        - cpu
+        - load
+        - filesystem
+        - fsstat
+        - memory
+        - network
+        - process
+  enabled: true
+  period: 10s
+  processes: ['.*']
+  output:
+    file:
+      path: /tmp/metricbeat
+      filename: metricbeat.out
+  logging:
+    to_syslog: true
+    level: error
 

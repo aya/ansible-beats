@@ -6,6 +6,22 @@
 
 - include: install_common.yml
 
+- name: install - get beats installed version
+  with_items: "{{beats|default([])}}"
+  command: "rpm --nosignature -q {{item}} --queryformat=\"%{VERSION}\""
+  register: beats_version_command
+
+- name: install - register beats_version
+  with_items: "{{beats_version_command.results|default([])}}"
+  set_fact:
+    beats_version: "{{beats_version |default({}) |combine( {item.item: item.stdout} ) }}"
+
+- name: install - debug beats installed version
+  with_items: "{{beats|default([])}}"
+  debug: msg="{{beats_version[item]}}"
+  when: beats_debug|default(false)
+  tags: debug
+
 - name: install - remove beats package
   with_items: "{{beats_package|default([])}}"
   when: item.name is defined and item.state|default('present') == "absent"
@@ -14,10 +30,11 @@
 - name: install - download rpm
   with_items: "{{beats_download|default([])}}"
   get_url: url="{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm" dest="/tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm" mode=0440 validate_certs=false
+  when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
 
 - name: install - install rpm
   with_items: "{{beats_download|default([])}}"
-  when: item.state|default('present') == "present"
+  when: item.state|default('present') == "present" and beats_version[item.name] != item.version
   raw: "rpm --nosignature -qi {{item.name}} >/dev/null 2>&1 || rpm -i --nosignature /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
 
 - name: install - upgrade rpm
@@ -35,5 +52,6 @@
 
 - name: install - remove rpm
   with_items: "{{beats_download|default([])}}"
-  raw: "rm /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
+  raw: "rm /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm 2>/dev/null"
+  when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
 

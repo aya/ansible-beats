@@ -1,18 +1,15 @@
 ---
 # file: handlers/main.yml
 
-- name: trace open files
-  with_items: "{{beats}}"
-  command: "/tmp/log-open-files {{item}}"
-  when: "beats_trace_{{item}}"
+- name: log open files
+  with_items: "{{beats_handler_notify.results}}"
+  command: "/tmp/log-open-files {{item.item}}"
+  when: item.changed and beats_trace_{{item.item}}|default(false)
 
-- name: restart filebeat
+- name: restart service
+  with_items: "{{beats_handler_notify.results}}"
   service:
-    name: filebeat
+    name: "{{item.item}}"
     state: restarted
-
-- name: restart topbeat
-  service:
-    name: topbeat
-    state: restarted
+  when: item.changed and beats_start_{{item.item}}|default(true)
 

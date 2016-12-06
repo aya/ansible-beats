@@ -24,18 +24,37 @@
   yum:
     name: "{{item.name}}"
     state: "{{item.state|default('present')}}"
+  register: beats_handler_notify
   notify:
-    - trace open files
-    - restart {{item.name}}
+    - log open files
+    - restart service
   become: yes
+
+- name: install - get beats installed version
+  with_items: "{{beats|default([])}}"
+  command: "rpm --nosignature -q {{item}} --queryformat=\"%{VERSION}\""
+  register: beats_version_command
+
+- name: install - register beats_version
+  with_items: "{{beats_version_command.results|default([])}}"
+  set_fact:
+    beats_version: "{{beats_version |default({}) |combine( {item.item: item.stdout} ) }}"
+
+- name: install - debug beats installed version
+  with_items: "{{beats|default([])}}"
+  debug: msg="{{beats_version[item]}}"
+  when: beats_debug|default(false)
+  tags: debug
 
 - name: install - install beats package from specific url
   with_items: "{{beats_download|default([])}}"
   yum:
     name: "{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
     state: "{{item.state|default('present')}}"
+  register: beats_handler_notify
   notify:
-    - trace open files
-    - restart {{item.name}}
+    - log open files
+    - restart service
+  when: beats_version[item.name] != item.version
   become: yes
 

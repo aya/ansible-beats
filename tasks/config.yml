@@ -15,9 +15,14 @@
   template:
     src: "{{item}}.yml.j2"
     dest: "/etc/{{item}}/{{item}}.yml"
+  register: beats_handler_notify
   notify:
-    - trace open files
-    - restart {{item}}
+    - log open files
+    - restart service
+
+- name: config - debug
+  debug: msg="{{beats_notify}}"
+  when: beats_debug|default(false)
 
 - name: config - update file /etc/hosts
   with_items: "{{beats_hosts|default([])}}"
