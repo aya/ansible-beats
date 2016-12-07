@@ -1,7 +1,33 @@
 ---
 # file: tasks/install.yml
 
+- include: install_version.yml
+
+- name: install - download tarball
+  with_items: "{{beats_download|default([])}}"
+  get_url: url="{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-linux-{{ansible_machine|regex_replace('^i[36]','x')}}.tar.gz" dest="/tmp/{{item.name}}-{{item.version}}-linux-{{ansible_machine|regex_replace('^i[36]','x')}}.tar.gz" mode=0644 validate_certs=false
+  when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
+
 - name: install - extract beats tarball
   with_items: "{{beats_download|default([])}}"
-  unarchive: src="{{beats_download_url}}/{{item.name}}/{{item.name}}-{{item.version}}-{{ansible_machine}}.tar.gz" dest=/usr/local/bin remote_src=yes validate_certs=false
+  unarchive: src="/tmp/{{item.name}}-{{item.version}}-linux-{{ansible_machine|regex_replace('^i[36]','x')}}.tar.gz" dest=/tmp remote_src=yes copy=no
+  when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
+
+- name: install - copy beats binary
+  with_items: "{{beats_download|default([])}}"
+  copy:
+    src: "/tmp/{{item.name}}-{{item.version}}-linux-{{ansible_machine|regex_replace('^i[36]','x')}}/{{item.name}}"
+    dest: "/usr/local/bin"
+    remote_src: "yes"
+    mode: 0755
+  when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
+  become: yes
+
+- name: install - remove tarball
+  with_items: "{{beats_download|default([])}}"
+  raw: "rm -rf /tmp/{{item.name}}-{{item.version}}-linunx-{{ansible_machine}}*"
+  when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
+
+- include: install_common.yml
+  become: yes
 

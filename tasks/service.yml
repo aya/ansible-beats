@@ -1,11 +1,18 @@
 ---
 # file: tasks/service.yml
 
-- name: service - start and enable beats services
-  with_items: "{{beats}}"
-  service:
-    name: "{{item}}"
-    state: "{{ hostvars[inventory_hostname]['beats_start_' + item] |default(true) |ternary('started','stopped') }}"
-    enabled: "{{ hostvars[inventory_hostname]['beats_start_' + item] |default(true) }}"
-  become: yes
+- name: service - install monit
+  package:
+    name: "monit"
+    state: "present"
 
+- name: service - copy beats init script
+  with_items: "{{beats|default([])}}"
+  copy:
+    src: ../files/etc/init.d/beats
+    dest: "/etc/init.d/{{item}}"
+    mode: 0755
+    owner: root
+    group: root
+
+- include: service_monit.yml

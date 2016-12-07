@@ -51,6 +51,12 @@ beats_trace_metricbeat: false
 # Location of beats configurations loaded by the init script
 beats_init_config_directory: "/etc/sysconfig"
 
+# Location of monit configuration file (for beats installed from tarball)
+beats_monit_config_file: "/etc/monitrc"
+
+# Location of monit service files (for beats installed from tarball)
+beats_monit_config_directory: "/etc/monit.d"
+
 # Environment variable to set, they will be available in your beats configuration files
 # beats_environment:
 #  - { "name": "filebeat", "state": "present", "line": "FB_ENV=$(echo \"test\")" }

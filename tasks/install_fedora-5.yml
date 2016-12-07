@@ -4,23 +4,7 @@
 # on kernel-2.6.15-1.2054_FC5 filebeat will fail with beat.go:140: CRIT open /proc/sys/kernel/hostname: errno 530
 # on kernel v2.6.18-194.26.1.el5 filebeat-god segfaults, so we need to monitor the filebeat process with another solution
 
-- include: install_common.yml
-
-- name: install - get beats installed version
-  with_items: "{{beats|default([])}}"
-  command: "rpm --nosignature -q {{item}} --queryformat=\"%{VERSION}\""
-  register: beats_version_command
-
-- name: install - register beats_version
-  with_items: "{{beats_version_command.results|default([])}}"
-  set_fact:
-    beats_version: "{{beats_version |default({}) |combine( {item.item: item.stdout} ) }}"
-
-- name: install - debug beats installed version
-  with_items: "{{beats|default([])}}"
-  debug: msg="{{beats_version[item]}}"
-  when: beats_debug|default(false)
-  tags: debug
+- include: install_version.yml
 
 - name: install - remove beats package
   with_items: "{{beats_package|default([])}}"
@@ -48,10 +32,14 @@
   raw: "rpm --nosignature -qi {{item.name}} >/dev/null && rpm -e {{item.name}}"
 
 - name: install - update filebeat init script
-  raw: "[ -f /etc/init.d/filebeat ] && sed -i '/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/,/RETVAL=$?/{s/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/rh_status_q \\&\\& success \\&\\& echo \\&\\& return\\n    exec $agent $args \\&/;s/RETVAL=$?/RETVAL=$?\\n    [ \"$RETVAL\" = 0 ] \\&\\& echo $! > ${pidfile} \\&\\& success \\|\\| failure/}; s/$pidopts $wrapper/$pidopts $agent/; /^wrapper/d' /etc/init.d/filebeat"
+  with_items: "{{beats_download|default([])}}"
+  raw: "[ -f /etc/init.d/{{item.name}} ] && sed -i '/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/,/RETVAL=$?/{s/daemon $daemonopts $wrapper $wrapperopts -- $agent $args/rh_status_q \\&\\& success \\&\\& echo \\&\\& return\\n    exec $agent $args \\&/;s/RETVAL=$?/RETVAL=$?\\n    [ \"$RETVAL\" = 0 ] \\&\\& echo $! > ${pidfile} \\&\\& success \\|\\| failure/}; s/$pidopts $wrapper/$pidopts $agent/; /^wrapper/d' /etc/init.d/{{item.name}}"
+  when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
 
 - name: install - remove rpm
   with_items: "{{beats_download|default([])}}"
   raw: "rm /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm 2>/dev/null"
   when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
+
+- include: install_common.yml
 

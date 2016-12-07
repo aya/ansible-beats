@@ -1,6 +1,9 @@
 ---
 # file: tasks/config.yml
 
+- name: config - create ca certificate directory
+  file: path="{{beats_ca_path|regex_replace('/[^/]*$', '')}}/" state=directory mode=0755
+
 - name: config - create ca certificate
   when: beats_ca_cert != None
   copy:
@@ -9,6 +12,10 @@
     owner: root
     group: root
     mode: 0400
+
+- name: config - create beats configuration directory
+  with_items: "{{beats|default([])}}"
+  file: path="/etc/{{item}}/" state=directory mode=0755
 
 - name: config - create beats configuration
   with_items: "{{beats|default([])}}"

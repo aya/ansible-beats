@@ -1,0 +1,11 @@
+---
+# file: tasks/service.yml
+
+- name: service - start and enable beats services
+  with_items: "{{beats}}"
+  service:
+    name: "{{item}}"
+    state: "{{ hostvars[inventory_hostname]['beats_start_' + item] |default(true) |ternary('started','stopped') }}"
+    enabled: "{{ hostvars[inventory_hostname]['beats_start_' + item] |default(true) }}"
+  become: yes
+

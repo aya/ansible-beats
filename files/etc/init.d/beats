@@ -1,0 +1,67 @@
+#!/bin/sh
+# Author: Yann Autissier <yann.autissier@gmail.com>
+# Generic init script for elastic beats
+
+PATH="/usr/local/bin:/usr/bin:/bin"
+DAEMON="$(basename $0)"
+return=0
+
+PIDFILE="/var/run/${DAEMON}.pid"
+DAEMON_ARGS="-c /etc/${DAEMON}/${DAEMON}.yml"
+[ -f /etc/sysconfig/${DAEMON} ] && . /etc/sysconfig/${DAEMON}
+
+# Exit if the beat is not installed
+which ${DAEMON} >/dev/null 2>&1 || exit 127
+
+start() {
+    # Do nothing if the beat is already started
+    pid=$(pidof -s ${DAEMON} 2>/dev/null)
+    [ $? -eq 0 ] && [ "${pid}" = "$(cat ${PIDFILE} 2>/dev/null)" ] && return
+    # Exec the beat in background
+    echo -n "Starting ${DAEMON}: "
+    exec ${DAEMON} ${DAEMON_ARGS} 2>/dev/null &
+    # Check if the beat is running
+    sleep 1 && kill -0 $! 2>/dev/null
+    return=$?
+    [ ${return} -eq 0 ] && echo "$!" 2>/dev/null > ${PIDFILE} && echo "OK" || echo "ERROR"
+}
+
+stop() {
+    # Do nothing if the beat is already stopped
+    pid=$(pidof ${DAEMON} 2>/dev/null)
+    [ $? -eq 1 ] && return
+    # Kill the beat with SIGTERM
+    echo -n "Stopping ${DAEMON}: "
+    kill $(cat ${PIDFILE} 2>/dev/null) 2>/dev/null
+    return=$?
+    [ ${return} -eq 0 ] && rm -f ${PIDFILE} && echo "OK" || echo "ERROR"
+}
+
+status() {
+    echo -n "${DAEMON} is: "
+    pid=$(pidof ${DAEMON} 2>/dev/null)
+    return=$?
+    [ ${return} -eq 0 ] && [ "${pid}" = "$(cat ${PIDFILE} 2>/dev/null)" ] && echo "started" || echo "stopped"
+}
+
+case "$1" in
+    start)
+        start
+    ;;
+    stop)
+        stop
+    ;;
+    restart)
+        stop
+        start
+    ;;
+    status)
+        status
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart}"
+        exit 1
+esac
+
+exit ${return}
+

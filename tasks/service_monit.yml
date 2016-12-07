@@ -1,0 +1,35 @@
+---
+# file: tasks/service_monit.yml
+
+- name: service - create monit configuration directory
+  file: path="{{beats_monit_config_directory}}" state=directory mode=0755
+
+- name: service - copy monit services
+  with_items: "{{beats|default([])}}"
+  copy:
+    src: "files/etc/monit.d/{{item}}"
+    dest: "{{beats_monit_config_directory}}/{{item}}"
+    mode: 0644
+
+- name: service - enable monit configuration directory
+  raw: "[ -f {{beats_monit_config_file}} ] && sed -i 's|#\\s*include {{beats_monit_config_directory}}|include {{beats_monit_config_directory}}|' {{beats_monit_config_file}}"
+
+- name: service - configure monit alert mail
+  raw: "[ -f /etc/centile/cluster/cluster.conf ] && { grep '^set alert' {{beats_monit_config_file}} >/dev/null 2>&1 || awk 'BEGIN {FS=\"=\"} $0 ~ /^mail_recipient/ {print \"set alert \"$2}' /etc/centile/cluster/cluster.conf >> {{beats_monit_config_file}}; } || true"
+
+- name: service - start and enable monit
+  service:
+    name: monit
+    state: started
+    enabled: true
+
+- name: service - start monit services
+  with_items: "{{beats|default([])}}"
+  command: "monit start {{item}}"
+  when: hostvars[inventory_hostname]['beats_start_' + item] |default(true)
+
+- name: service - stop monit services
+  with_items: "{{beats|default([])}}"
+  command: "monit stop {{item}}"
+  when: not hostvars[inventory_hostname]['beats_start_' + item] |default(true)
+

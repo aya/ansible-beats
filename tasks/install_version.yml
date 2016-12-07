@@ -1,0 +1,18 @@
+---
+# file: tasks/install_version.yml
+
+- name: install - get beats installed version
+  with_items: "{{beats|default([])}}"
+  command: "echo $({{item}} -version 2>/dev/null || /usr/share/{{item}}/bin/{{item}} -version 2>/dev/null) |awk '{print $3}'"
+  register: beats_version_command
+
+- name: install - register beats_version
+  with_items: "{{beats_version_command.results|default([])}}"
+  set_fact:
+    beats_version: "{{beats_version |default({}) |combine( {item.item: item.stdout} ) }}"
+
+- name: install - debug beats installed version
+  with_items: "{{beats|default([])}}"
+  debug: msg="{{beats_version[item]}}"
+  when: beats_debug|default(false)
+

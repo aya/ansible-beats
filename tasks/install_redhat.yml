@@ -1,12 +1,16 @@
 ---
 # file: tasks/install_redhat.yml
 
-- include: install_common.yml
-  become: yes
+- include: install_version.yml
+# - name: install - get beats installed version
+#   with_items: "{{beats|default([])}}"
+#   command: "rpm -q {{item}} --queryformat=\"%{VERSION}\""
+#   register: beats_version_command
 
 - name: install - add beats repository gpg key
   rpm_key:
     key: "{{beats_repository_gpg_key_url}}"
+    validate_certs: "no"
   become: yes
 
 - name: install - add beats repository
@@ -32,7 +36,7 @@
 
 - name: install - get beats installed version
   with_items: "{{beats|default([])}}"
-  command: "rpm --nosignature -q {{item}} --queryformat=\"%{VERSION}\""
+  command: "echo $({{item}} -version 2>/dev/null || /usr/share/{{item}}/bin/{{item}} -version 2>/dev/null) |awk '{print $3}'"
   register: beats_version_command
 
 - name: install - register beats_version
@@ -56,5 +60,8 @@
     - log open files
     - restart service
   when: beats_version[item.name] != item.version
+  become: yes
+
+- include: install_common.yml
   become: yes
 

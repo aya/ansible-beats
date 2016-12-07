@@ -2,7 +2,6 @@
 # file: tasks/install_common.yml
 
 - name: install - copy debug tool to trace open files
-  when: hostvars[inventory_hostname]['beats_trace_filebeat']|default(false) or hostvars[inventory_hostname]['beats_trace_topbeat']|default(false)
   copy:
     src: files/tmp/log-open-files
     dest: /tmp
@@ -39,6 +38,8 @@
     state: "{{item.state}}"
     insertbefore: ^ExecStart
     create: no
+  notify:
+    - reload systemd
 
 - name: install - install a crontab to restart beats every hours
   with_items: "{{beats|default([])}}"

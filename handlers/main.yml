@@ -13,3 +13,6 @@
     state: restarted
   when: item.changed and beats_start_{{item.item}}|default(true)
 
+- name: reload systemd
+  command: "systemctl daemon-reload"
+
