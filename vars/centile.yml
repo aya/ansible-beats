@@ -1,0 +1,7 @@
+---
+# file: vars/centile.yml
+
+beats_repository_url: "https://packages.elastic.co/beats/yum/el/$basearch"
+beats_monit_config_file: "/etc/monit.conf"
+beats_monit_config_directory: "/etc/monit.d"
+

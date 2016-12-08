@@ -4,7 +4,7 @@
 - include: install_version.yml
 # - name: install - get beats installed version
 #   with_items: "{{beats|default([])}}"
-#   command: "rpm -q {{item}} --queryformat=\"%{VERSION}\""
+#   command: "rpm --nosignature -q {{item}} --queryformat=\"%{VERSION}\""
 #   register: beats_version_command
 
 - name: install - add beats repository gpg key

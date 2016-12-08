@@ -11,7 +11,7 @@
   when: beats_monit.stdout == ""
 
 - name: service - install monit rpm
-  raw: "rpm -qi monit >/dev/null 2>&1 || rpm -i /tmp/monit-{{ansible_architecture}}.rpm"
+  raw: "rpm --nosignature -qi monit >/dev/null 2>&1 || rpm --nosignature -i /tmp/monit-{{ansible_architecture}}.rpm"
   when: beats_monit.stdout == ""
 
 - name: service - remove monit rpm
@@ -28,6 +28,16 @@
     name: "{{item}}"
     state: "stopped"
     enabled: false
+
+- name: service - install a crontab to get monit status every day
+  lineinfile:
+    dest: "/etc/cron.d/monit"
+    line: "0 0 * * *   root    /usr/bin/monit -v"
+    state: "present"
+    create: yes
+    owner: root
+    group: root
+    mode: 0644
 
 - include: service_monit.yml
 
