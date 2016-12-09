@@ -25,6 +25,8 @@
   with_items: "{{beats_download|default([])}}"
   when: item.state|default('present') == "latest"
   raw: "rpm -i --nosignature --force /tmp/{{item.name}}-{{item.version}}-{{ansible_machine}}.rpm"
+  register: beats_handler_notify
+  notify: restart service
 
 - name: install - erase rpm
   with_items: "{{beats_download|default([])}}"

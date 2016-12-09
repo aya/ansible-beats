@@ -21,6 +21,8 @@
     remote_src: "yes"
     mode: 0755
   when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
+  register: beats_handler_notify
+  notify: restart service
   become: yes
 
 - name: install - remove tarball
