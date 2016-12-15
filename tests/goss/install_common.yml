@@ -1,0 +1,3 @@
+package:
+  filebeat:
+    installed: true

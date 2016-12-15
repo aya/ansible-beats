@@ -1,0 +1,6 @@
+---
+# file: tests/playbook.yml
+
+- hosts: beats
+  tasks:
+    - include: main.yml

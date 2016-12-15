@@ -1,0 +1,4 @@
+gossfile:
+  config_debian.yml: {}
+  install_debian.yml: {}
+  service_debian.yml: {}

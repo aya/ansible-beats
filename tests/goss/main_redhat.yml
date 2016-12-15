@@ -1,0 +1,4 @@
+gossfile:
+  config_redhat.yml: {}
+  install_redhat.yml: {}
+  service_redhat.yml: {}

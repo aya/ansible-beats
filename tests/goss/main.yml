@@ -1,0 +1,4 @@
+gossfile:
+  config.yml: {}
+  install.yml: {}
+  service.yml: {}

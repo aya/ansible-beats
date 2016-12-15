@@ -1,5 +1,0 @@
-# type de log : nombres de lignes par fichier : nombre total de fichiers a creer : nombre de fichiers a conserver : nom des fichiers a creer
-intraswitch:100000:100:10:/usr/ipbx/IntraSwitch/http/out/TEST_20161101_000000_{ID}.log
-amtp:100000:100:10:/opt/amtp/log/TEST_201611010{ID}.log
-measure:100000:100:10:/usr/ipbx/IntraSwitch/logs/TEST/20161101_000000_{ID}.log
-request:100000:100:10:/usr/ipbx/IntraSwitch/http/out/TEST_9999_20161101_000000_{ID}_request.log
