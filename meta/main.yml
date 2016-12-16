@@ -1,11 +1,23 @@
 ---
 galaxy_info:
-  author: David Wittman, Yann Autissier
+  author: Yann Autissier
   description: Installs Elastic's beats
   license: BSD
   min_ansible_version: 2.1
   platforms:
   - name: EL
+    versions:
+    - all
+  - name: Fedora
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Alpine
     versions:
     - all
   categories:
