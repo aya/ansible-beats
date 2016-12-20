@@ -10,7 +10,7 @@
 
 - name: install - extract beats tarball
   with_items: "{{beats_download|default([])}}"
-  unarchive: src="/tmp/{{item.name}}-{{item.version}}-linux-{{ansible_machine|regex_replace('^i[36]','x')}}.tar.gz" dest=/tmp remote_src=yes copy=no
+  unarchive: src="/tmp/{{item.name}}-{{item.version}}-linux-{{ansible_machine|regex_replace('^i[36]','x')}}.tar.gz" dest=/tmp remote_src=yes
   when: beats_version[item.name] != item.version or item.state|default('present') == "latest"
 
 - name: install - copy beats binary

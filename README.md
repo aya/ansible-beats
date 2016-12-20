@@ -7,6 +7,7 @@ An Ansible role to install [Elastic's beats](https://www.elastic.co/products/bea
 ## Requirements
 
 This Ansible role requires at least Ansible version 2.1.
+Version greater than 2.1.2 is recommended to avoid a [bug in yum module](https://github.com/ansible/ansible/issues/16006) failing to install new version of beats when packages are already installed.
 
 ## Role Variables
 

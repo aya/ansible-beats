@@ -28,7 +28,7 @@
     - restart service
 
 - name: config - debug
-  debug: msg="{{beats_notify}}"
+  debug: msg="{{beats_handler_notify}}"
   when: beats_debug|default(false)
 
 - name: config - update file /etc/hosts

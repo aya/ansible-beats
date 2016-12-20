@@ -3,7 +3,7 @@
 
 - name: install - get beats installed version
   with_items: "{{beats|default([])}}"
-  command: "echo $({{item}} -version 2>/dev/null || /usr/share/{{item}}/bin/{{item}} -version 2>/dev/null) |awk '{print $3}'"
+  shell: "({{item}} -version 2>/dev/null || /usr/local/bin/{{item}} -version 2>/dev/null || /usr/share/{{item}}/bin/{{item}} -version 2>/dev/null) |awk '{print $3}'"
   register: beats_version_command
 
 - name: install - register beats_version
