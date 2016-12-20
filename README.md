@@ -386,11 +386,3 @@ $ ansible-playbook tests/playbook.yml
 It is known to work on CentOS, Debian and Alpine Linux.
 It has been adapted to be run on old Fedora Core 5 too.
 
-## License
-
-BSD
-
-## Authors
-
-* **David Wittman** - Initial release - Installation of Filebeat on CentOS [DavidWittman](https://github.com/DavidWittman/ansible-filebeat)
-* **Yann Autissier** - Extends to all Elastic beats on all platforms - [@aya](https://github.com/aya/ansible-beats)
